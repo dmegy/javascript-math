@@ -15,8 +15,7 @@
 var sommets = new Array();
 var aretes = new Array();
 var axes = new Array();
-var visibiliteAxes = new Array();
-var axeRotation = new Array();
+var n=6; // axe de la rotation active
 
 var projections = new Array();
 //projections 2d des points
@@ -51,10 +50,6 @@ function initialiserAxes(){
     axes[12]=[0,0,1];
 }
 
-function initialiserVisibiliteAxes(){
-    for(var i=0 ; i<13 ; i++)
-        visibiliteAxes[i]= false ;
-}
 
 function commencer() {
     candiv = document.getElementById("candiv");
@@ -71,8 +66,6 @@ function commencer() {
     sommets=sommetsCube.slice(0);
     aretes=aretesCube.slice(0);
     initialiserAxes();
-    initialiserVisibiliteAxes();
-    changerAxeRotation(6);
     calculerProjections();
     dessinerAretes();
     window.setTimeout(mettreAJour,500);
@@ -119,67 +112,42 @@ function dessinerAretes() {// on dessine en noir
     }
 }
 
-function calculerDessinerAxes(){ //calcule aussi les projections avant
+function calculerDessinerAxe(){ //calcule aussi les projections avant
     var x; var y; 
     ctx.setLineDash([10, 6]);
     ctx.lineWidth = 3;
-    for(var i = 0 ; i<13 ; i++) {
-        if(visibiliteAxes[i]){
-            if(i<6) ctx.strokeStyle = "rgb(200,0,0)";
-            else if(i>9) ctx.strokeStyle = "rgb(0,0,200)";
-            else ctx.strokeStyle = "rgb(0,200,0)";
-            // calcul des projections et dessin
-            x = produitScalaire(matriceProj[1],axes[i]);
-            y = produitScalaire(matriceProj[2],axes[i]);
-            ctx.beginPath();
-            ctx.moveTo(200+100*x, 200+100*y);
-            ctx.lineTo(200-100*x, 200-100*y);
-            ctx.stroke();
-        }
-    }
+    if(n<6) ctx.strokeStyle = "rgb(150,30,30)";
+    else if(n>9) ctx.strokeStyle = "rgb(30,30,150)";
+    else ctx.strokeStyle = "rgb(30,150,30)";
+    // calcul des projections et dessin
+    x = produitScalaire(matriceProj[1],axes[n]);
+    y = produitScalaire(matriceProj[2],axes[n]);
+    ctx.beginPath();
+    ctx.moveTo(200+100*x, 200+100*y);
+    ctx.lineTo(200-100*x, 200-100*y);
+    ctx.stroke();
     ctx.setLineDash([]); 
 }
-
-
 
 function effacer() {
     ctx.clearRect(0,0,400,400);
 }
 
-
-function changerAxeRotation(n){
-	axeRotation=axes[n];
-    for( var i=0 ; i<13 ; i++ )
-        visibiliteAxes[i] = false ;
-    visibiliteAxes[n] = true ;
+function changerAxeRotation(k){
+    n=k;
 }
-
-
-
-
-
-
-
 //- - - - - - - - - - - - - - - - - - 
 //- - - - controle de l'animation  
 //- - - - - - - - - - - - - - - - - -
 
 function mettreAJour() {
 		effacer();
-		matriceProj = produitMatriciel(matriceProj,matriceRotation(axeRotation,0.02));
+		matriceProj = produitMatriciel(matriceProj,matriceRotation(axes[n],0.02));
 		calculerProjections();
 		dessinerAretes();
-		calculerDessinerAxes();
+		calculerDessinerAxe();
 		window.setTimeout(mettreAJour, 40);
 }
-
-
-
-
-
-
-
-
 
 //- - - - - - - - - - - - - - - - - - 
 //- - - - fin du javascript - - - - -
