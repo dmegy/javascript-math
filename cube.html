@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Rotations du cube</title>
+<script type="text/javascript" src="algebre.js"></script>
+<script type="text/javascript">
+
+//syntaxe canvas et motivation prises sur http://www.madore.org/~david/math/e8rotate.html
+
+//variables
+
+
+var sommets = new Array();
+var aretes = new Array();
+var axes = new Array();
+var visibiliteAxes = new Array();
+var axeRotation = new Array();
+
+var projections = new Array();
+//projections 2d des points
+
+var matriceProj = new Array();
+// matrice de projection courante
+
+
+
+
+//- - - - - - - - - - - - - - - - - - 
+//- - - - Fonctions d'initialisation des variables
+//- - - - - - - - - - - - - - - - - -
+
+
+function initialiserSommets(){
+    for(var i=0 ; i<2 ; i++)
+        for(var j=0 ; j<2 ; j++)
+            for(var k=0 ; k<2 ; k++)
+                sommets.push([Math.pow((-1),i),Math.pow((-1),j),Math.pow((-1),k)]);
+}
+//note : le sommet i est opposé au sommet 7-i
+
+function initialiserAretes(){
+    for(var i=0 ; i<sommets.length ; i++)
+        for(var j=i+1 ; j<sommets.length ; j++)
+            if(distance(sommets[i], sommets[j])==2)
+                aretes.push([i,j]);
+}
+//note : l'arete i est opposée à l'arete 11-i
+
+
+function initialiserAxes(){
+    //six axes d'ordre 2
+    axes[0]=[0,1,1];
+    axes[1]=[1,0,1];
+    axes[2]=[1,1,0];
+    axes[3]=[0,-1,1];
+    axes[4]=[-1,0,1];
+    axes[5]=[-1,1,0];
+    //quatre axes d'ordre 3
+    axes[6]=[1,1,1];
+    axes[7]=[-1,1,1];
+    axes[8]=[1,-1,1];
+    axes[9]=[-1,-1,1];
+    // trois axes d'ordre 4
+    axes[10]=[1,0,0];
+    axes[11]=[0,1,0];
+    axes[12]=[0,0,1];
+}
+
+function initialiserVisibiliteAxes(){
+    for(var i=0 ; i<13 ; i++)
+        visibiliteAxes[i]= false ;
+}
+
+function commencer() {
+    candiv = document.getElementById("candiv");
+    canvas = document.getElementById("canvas");
+    if ( typeof(canvas.getContext) != "function" ) {
+        alert("Votre navigateur ne supporte pas la fonction 'canvas'");
+    }
+    ctx = canvas.getContext("2d");
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    
+    matriceProj=[[1,0,0],[0,1,0],[0,0,1]];
+    initialiserSommets();
+    initialiserAretes();
+    initialiserAxes();
+    initialiserVisibiliteAxes();
+    changerAxeRotation(6);
+    calculerProjections();
+    dessinerAretes();
+    window.setTimeout(mettreAJour,500);
+}
+
+
+
+
+//- - - - - - - - - - - - - - - - - -
+//- - - - calculs et affichage
+//- - - - - - - - - - - - - - - - - -
+
+function calculerProjections() {
+    for ( var i=0 ; i<sommets.length ; i++ ) {
+        projections[i] = [produitScalaire(matriceProj[0],sommets[i])*100,
+			produitScalaire(matriceProj[1],sommets[i])*100+200,
+                       produitScalaire(matriceProj[2],sommets[i])*100+200];
+    }
+}
+
+//dessine une arete entre le sommet p et le sommet q
+function dessinerAreteEntre(p,q, couleur){
+    var z;
+    ctx.strokeStyle = couleur;
+    z=(projections[p][0]+projections[q][0])/2;
+    ctx.lineWidth = 0.005*(z+150);
+    // opacité en fonction de la profondeur pour mieux voir
+    ctx.beginPath();
+    ctx.moveTo(projections[p][1], projections[p][2]);
+    ctx.lineTo(projections[q][1], projections[q][2]);
+    ctx.stroke();
+}
+
+//dessine la k-ème arète
+function dessinerAreteNumero(k, couleur){
+    var p = aretes[k][0];
+    var q = aretes[k][1];
+    dessinerAreteEntre(p,q,couleur);
+}
+
+function dessinerAretes() {// on dessine en noir
+    for ( var n=0 ; n<aretes.length ; n++ ) {
+        dessinerAreteNumero(n,"rgb(0,0,0)");
+    }
+}
+
+function calculerDessinerAxes(){ //calcule aussi les projections avant
+    var x; var y; 
+    ctx.setLineDash([10, 6]);
+    ctx.lineWidth = 3;
+    for(var i = 0 ; i<13 ; i++) {
+        if(visibiliteAxes[i]){
+            if(i<6) ctx.strokeStyle = "rgb(200,0,0)";
+            else if(i>9) ctx.strokeStyle = "rgb(0,0,200)";
+            else ctx.strokeStyle = "rgb(0,200,0)";
+            // calcul des projections et dessin
+            x = produitScalaire(matriceProj[1],axes[i]);
+            y = produitScalaire(matriceProj[2],axes[i]);
+            ctx.beginPath();
+            ctx.moveTo(200+100*x, 200+100*y);
+            ctx.lineTo(200-100*x, 200-100*y);
+            ctx.stroke();
+        }
+    }
+    ctx.setLineDash([]); 
+}
+
+
+
+function effacer() {
+    ctx.clearRect(0,0,400,400);
+}
+
+
+function changerAxeRotation(n){
+	axeRotation=axes[n];
+    for( var i=0 ; i<13 ; i++ )
+        visibiliteAxes[i] = false ;
+    visibiliteAxes[n] = true ;
+}
+
+
+
+
+
+
+
+//- - - - - - - - - - - - - - - - - - 
+//- - - - controle de l'animation  
+//- - - - - - - - - - - - - - - - - -
+
+function mettreAJour() {
+		effacer();
+		matriceProj = produitMatriciel(matriceProj,matriceRotation(axeRotation,0.02));
+		calculerProjections();
+		dessinerAretes();
+		calculerDessinerAxes();
+		window.setTimeout(mettreAJour, 40);
+}
+
+
+
+
+
+
+
+
+
+//- - - - - - - - - - - - - - - - - - 
+//- - - - fin du javascript - - - - -
+//- - - - - - - - - - - - - - - - - -
+</script>
+</head>
+<body onload="commencer()">
+    <center>
+<div id="candiv" style="position: relative; width: 400px; height: 400px">
+<canvas id="canvas" width="400" height="400" style="position: absolute; top: 0; left: 0">
+</canvas>
+</div></center>
+
+<h4>Rotations du cube selons différents axes privilégiés</h4>
+
+Axes d'ordre deux (relient les centres d'arêtes opposées): 
+<input type="button" value="0" onClick="changerAxeRotation(0)"> 
+<input type="button" value="1" onClick="changerAxeRotation(1)"/>
+<input type="button" value="2" onClick="changerAxeRotation(2)"/>
+<input type="button" value="3" onClick="changerAxeRotation(3)"/>
+<input type="button" value="4" onClick="changerAxeRotation(4)"/>
+<input type="button" value="5" onClick="changerAxeRotation(5)"/>
+<br/>
+Axes d'ordre trois (relient des sommets opposés): 
+<input type="button" value="6" onClick="changerAxeRotation(6)"/>
+<input type="button" value="7" onClick="changerAxeRotation(7)"/>
+<input type="button" value="8" onClick="changerAxeRotation(8)"/>
+<input type="button" value="9" onClick="changerAxeRotation(9)"/><br/>
+Axes d'ordre quatre (relient les centres de faces opposées):
+<input type="button" value="10" onClick="changerAxeRotation(10)"/>
+<input type="button" value="11" onClick="changerAxeRotation(11)"/>
+<input type="button" value="12" onClick="changerAxeRotation(12)"/>
+
+</body>
+</html>

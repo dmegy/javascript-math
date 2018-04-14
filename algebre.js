@@ -3,14 +3,14 @@
 //- - - - - - - - - - - - - - - - - -
 
 
-function produitScalaire(a,b){
+function produitScalaire(a,b){// vecteurs de même taille
 	var p=0;
-	for(var i=0;i<3;i++){p=p+a[i]*b[i];}
+	for(var i=0;i<a.length;i++){p=p+a[i]*b[i];}
 	return(p);
 }
 
 
-function produitVectoriel(a,b){
+function produitVectoriel(a,b){// en dimension 3
 	return([a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]);
 }
 
@@ -18,9 +18,17 @@ function norme(v){
 	return(Math.sqrt(produitScalaire(v,v)));
 }
 
-function distance(a,b){
-	var v=[0,0,0];
-	for(var i=0;i<3;i++){v[i]=b[i]-a[i];}
+function normer(v){
+	var s=new Array();
+	var n=norme(v);
+	for(var i=0;i<v.length;i++)
+		s[i]=v[i]/n;
+	return(s);
+}
+
+function distance(a,b){// vecteurs de même taille
+	var v=[];
+	for(var i=0;i<a.length;i++){v[i]=b[i]-a[i];}
 	return(norme(v));
 }
 
@@ -61,5 +69,21 @@ function produitMV(A, V) {// matrice par vecteur
         C[i] = produitScalaire(A[i],V);
     }
     return C;
+}
+
+function gramSchmidt(M) {
+	// orthonormalise les vecteurs-ligne de M
+	var d;
+	for(var k=0; k<M.length ; k++){
+		for( var l=0;l<k;l++){  
+    		d = produitScalaire(M[k], M[l]);
+    		for ( var i=0 ; i<3 ; i++ )
+    		    M[k][i] -= d*M[l][i];
+		}
+		M[k]=normer(M[k]);
+    	//d=norme(M[k]);
+    	//for ( var i=0 ; i<3 ; i++ )
+        //	M[k][i] /= d;
+	}
 }
 

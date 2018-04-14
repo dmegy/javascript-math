@@ -52,7 +52,7 @@ function axeAngleVersQ(axe,angle){
 }
 
 function matriceQ(q){
-// si le quaternion est unitaire, la matrice sera orthogonale
+	if (norme(q)!=1) q=normer(q); // sinon la matrice de sortie n'est pas orthogonale
 	var M=new Array();
 	var xx=q[1]*q[1];
 	var xy=q[1]*q[2];
