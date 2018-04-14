@@ -39,7 +39,21 @@ for(var i=0 ; i<sommetsCube.length ; i++)
 // - - - - - O C T A E D R E - - - - -
 // - - - - - - - - - - - - - - - - - -
 
+// flemme d'écrire ça avec des boucles:
+sommetsOctaedre.push([1,0,0]);
+sommetsOctaedre.push([0,1,0]);
+sommetsOctaedre.push([0,0,1]);
+sommetsOctaedre.push([0,0,-1]);
+sommetsOctaedre.push([0,-1,0]);
+sommetsOctaedre.push([-1,0,0]);
+//note : le sommet i est opposé au sommet 5-i
 
+//les arêtes de l'octaèdre sont les 12 qui ne sont *pas* de longueur 2
+// tester l'égalité sur sqrt(2) ne marche pas bien
+for(var i=0 ; i<sommetsOctaedre.length ; i++)
+    for(var j=i+1 ; j<sommetsOctaedre.length ; j++)
+        if(distance(sommetsOctaedre[i], sommetsOctaedre[j])!=2)
+            aretesOctaedre.push([i,j]);
 
 
 // - - - - - - - - - - - - - - - - - -
@@ -60,7 +74,7 @@ for(var i=0 ; i<2 ; i++)
 // les arêtes de l'icosaèdre sont celles de longueur 2
 for(var i=0 ; i<sommetsIcosaedre.length ; i++)
     for(var j=i+1 ; j<sommetsIcosaedre.length ; j++)
-        if(distance(sommetsIcosaedre[i], sommetsIcosaedre[j])==2) // snif
+        if(distance(sommetsIcosaedre[i], sommetsIcosaedre[j])==2)
             aretesIcosaedre.push([i,j]);
  
 
