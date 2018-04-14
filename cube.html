@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>Rotations du cube</title>
 <script type="text/javascript" src="algebre.js"></script>
+<script type="text/javascript" src="polyedres.js"></script>
 <script type="text/javascript">
 
 //syntaxe canvas et motivation prises sur http://www.madore.org/~david/math/e8rotate.html
@@ -29,23 +30,6 @@ var matriceProj = new Array();
 //- - - - - - - - - - - - - - - - - - 
 //- - - - Fonctions d'initialisation des variables
 //- - - - - - - - - - - - - - - - - -
-
-
-function initialiserSommets(){
-    for(var i=0 ; i<2 ; i++)
-        for(var j=0 ; j<2 ; j++)
-            for(var k=0 ; k<2 ; k++)
-                sommets.push([Math.pow((-1),i),Math.pow((-1),j),Math.pow((-1),k)]);
-}
-//note : le sommet i est opposé au sommet 7-i
-
-function initialiserAretes(){
-    for(var i=0 ; i<sommets.length ; i++)
-        for(var j=i+1 ; j<sommets.length ; j++)
-            if(distance(sommets[i], sommets[j])==2)
-                aretes.push([i,j]);
-}
-//note : l'arete i est opposée à l'arete 11-i
 
 
 function initialiserAxes(){
@@ -84,8 +68,8 @@ function commencer() {
 
     
     matriceProj=[[1,0,0],[0,1,0],[0,0,1]];
-    initialiserSommets();
-    initialiserAretes();
+    sommets=sommetsCube.slice(0);
+    aretes=aretesCube.slice(0);
     initialiserAxes();
     initialiserVisibiliteAxes();
     changerAxeRotation(6);
