@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Rotations du tetraèdre</title>
+<script type="text/javascript" src="algebre.js"></script>
+<script type="text/javascript" src="polyedres.js"></script>
+<script type="text/javascript" src="rendu.js"></script>
+<script type="text/javascript">
+
+//syntaxe canvas et motivation prises sur http://www.madore.org/~david/math/e8rotate.html
+
+//variables
+
+
+var sommets = new Array();
+var aretes = new Array();
+var axes = new Array();
+var n=0; // axe de la rotation active
+
+var projections = new Array();
+//projections 2d des points
+
+var matriceProj =[[1,0,0],[0,1,0],[0,0,1]];
+// matrice de projection courante, initialisée à l'identité
+var matriceRot =[[1,0,0],[0,1,0],[0,0,1]];
+// matrice de rotation "infinitésimale" courante
+
+function commencer() {
+    candiv = document.getElementById("candiv");
+    canvas = document.getElementById("canvas");
+    if ( typeof(canvas.getContext) != "function" ) {
+        alert("Votre navigateur ne supporte pas la fonction 'canvas'");
+    }
+    ctx = canvas.getContext("2d");
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    // une fois les js externes chargés:
+    sommets=sommetsTetraedre.slice(0);
+    aretes=aretesTetraedre.slice(0);
+    axes=axesTetraedre.slice(0);
+    changerAxeRotation(3);
+    
+    // départ dans 200 ms:
+    window.setTimeout(mettreAJour,200);
+}
+
+
+function calculerDessinerAxe(){ //calcule aussi les projections avant
+    var x; var y; 
+    ctx.setLineDash([10, 6]);
+    ctx.lineWidth = 3;
+    if(n<3) ctx.strokeStyle = "rgb(150,30,30)";
+    else ctx.strokeStyle = "rgb(30,30,150)";
+    // calcul des projections et dessin
+    x = produitScalaire(matriceProj[1],axes[n]);
+    y = produitScalaire(matriceProj[2],axes[n]);
+    ctx.beginPath();
+    ctx.moveTo(200+150*x, 200+150*y);
+    ctx.lineTo(200-150*x, 200-150*y);
+    ctx.stroke();
+    ctx.setLineDash([]); 
+}
+
+
+
+function changerAxeRotation(k){
+    n=k; // pour l'affichage de l'axe n en plus
+    matriceRot=matriceRotation(axes[n],0.02);
+}
+
+
+function mettreAJour() {
+		effacer();
+		matriceProj = produitMatriciel(matriceProj,matriceRot);
+		calculerProjections();
+		dessinerAretes();
+		calculerDessinerAxe();
+		window.setTimeout(mettreAJour, 40);
+}
+
+</script>
+</head>
+<body onload="commencer()">
+    <center>
+<div id="candiv" style="position: relative; width: 400px; height: 400px">
+<canvas id="canvas" width="400" height="400" style="position: absolute; top: 0; left: 0">
+</canvas>
+</div></center>
+
+<h4>Rotations du tetraèdre selons différents axes privilégiés</h4>
+
+Axes d'ordre deux (relient les centres d'arêtes opposées): 
+<input type="button" value="0" onClick="changerAxeRotation(0)"> 
+<input type="button" value="1" onClick="changerAxeRotation(1)"/>
+<input type="button" value="2" onClick="changerAxeRotation(2)"/>
+<br/>
+Axes d'ordre trois (relient un sommet au centre de la face opposée): 
+<input type="button" value="6" onClick="changerAxeRotation(3)"/>
+<input type="button" value="7" onClick="changerAxeRotation(4)"/>
+<input type="button" value="8" onClick="changerAxeRotation(5)"/>
+<input type="button" value="9" onClick="changerAxeRotation(6)"/><br/>
+
+</body>
+</html>

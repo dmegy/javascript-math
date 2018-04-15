@@ -1,5 +1,6 @@
 var sommetsTetraedre=new Array();
 var aretesTetraedre=new Array();
+var axesTetraedre=new Array();
 var sommetsCube=new Array();
 var aretesCube=new Array();
 var axesCube=new Array();
@@ -23,6 +24,17 @@ sommetsTetraedre.push([-1,1,-1]);
 for(var i=0 ; i<sommetsTetraedre.length ; i++)
     for(var j=i+1 ; j<sommetsTetraedre.length ; j++)
         aretesTetraedre.push([i,j]);
+
+// trois axes d'ordre deux
+axesTetraedre.push([1,0,0]);
+axesTetraedre.push([0,1,0]);
+axesTetraedre.push([0,0,1]);
+// quatre axes d'ordre trois
+axesTetraedre.push([1,1,1]);
+axesTetraedre.push([-1,-1,1]);
+axesTetraedre.push([1,-1,-1]);
+axesTetraedre.push([-1,1,-1]);
+
 
 // - - - - - - - - - - - - - - - - - -
 // - - - - - - - C U B E - - - - - - - 
