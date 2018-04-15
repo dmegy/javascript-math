@@ -5,6 +5,7 @@
 <title>Rotations du cube</title>
 <script type="text/javascript" src="algebre.js"></script>
 <script type="text/javascript" src="polyedres.js"></script>
+<script type="text/javascript" src="rendu.js"></script>
 <script type="text/javascript">
 
 //syntaxe canvas et motivation prises sur http://www.madore.org/~david/math/e8rotate.html
@@ -15,41 +16,15 @@
 var sommets = new Array();
 var aretes = new Array();
 var axes = new Array();
-var n=6; // axe de la rotation active
+var n=0; // axe de la rotation active
 
 var projections = new Array();
 //projections 2d des points
 
-var matriceProj = new Array();
-// matrice de projection courante
-
-
-
-
-//- - - - - - - - - - - - - - - - - - 
-//- - - - Fonctions d'initialisation des variables
-//- - - - - - - - - - - - - - - - - -
-
-
-function initialiserAxes(){
-    //six axes d'ordre 2
-    axes[0]=[0,1,1];
-    axes[1]=[1,0,1];
-    axes[2]=[1,1,0];
-    axes[3]=[0,-1,1];
-    axes[4]=[-1,0,1];
-    axes[5]=[-1,1,0];
-    //quatre axes d'ordre 3
-    axes[6]=[1,1,1];
-    axes[7]=[-1,1,1];
-    axes[8]=[1,-1,1];
-    axes[9]=[-1,-1,1];
-    // trois axes d'ordre 4
-    axes[10]=[1,0,0];
-    axes[11]=[0,1,0];
-    axes[12]=[0,0,1];
-}
-
+var matriceProj =[[1,0,0],[0,1,0],[0,0,1]];
+// matrice de projection courante, initialisée à l'identité
+var matriceRot =[[1,0,0],[0,1,0],[0,0,1]];
+// matrice de rotation "infinitésimale" courante
 
 function commencer() {
     candiv = document.getElementById("candiv");
@@ -61,56 +36,16 @@ function commencer() {
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
-    
-    matriceProj=[[1,0,0],[0,1,0],[0,0,1]];
+    // une fois les js externes chargés:
     sommets=sommetsCube.slice(0);
     aretes=aretesCube.slice(0);
-    initialiserAxes();
-    calculerProjections();
-    dessinerAretes();
-    window.setTimeout(mettreAJour,500);
+    axes=axesCube.slice(0);
+    changerAxeRotation(6);
+    
+    // départ dans 200 ms:
+    window.setTimeout(mettreAJour,200);
 }
 
-
-
-
-//- - - - - - - - - - - - - - - - - -
-//- - - - calculs et affichage
-//- - - - - - - - - - - - - - - - - -
-
-function calculerProjections() {
-    for ( var i=0 ; i<sommets.length ; i++ ) {
-        projections[i] = [produitScalaire(matriceProj[0],sommets[i])*100,
-			produitScalaire(matriceProj[1],sommets[i])*100+200,
-                       produitScalaire(matriceProj[2],sommets[i])*100+200];
-    }
-}
-
-//dessine une arete entre le sommet p et le sommet q
-function dessinerAreteEntre(p,q, couleur){
-    var z;
-    ctx.strokeStyle = couleur;
-    z=(projections[p][0]+projections[q][0])/2;
-    ctx.lineWidth = 0.005*(z+150);
-    // opacité en fonction de la profondeur pour mieux voir
-    ctx.beginPath();
-    ctx.moveTo(projections[p][1], projections[p][2]);
-    ctx.lineTo(projections[q][1], projections[q][2]);
-    ctx.stroke();
-}
-
-//dessine la k-ème arète
-function dessinerAreteNumero(k, couleur){
-    var p = aretes[k][0];
-    var q = aretes[k][1];
-    dessinerAreteEntre(p,q,couleur);
-}
-
-function dessinerAretes() {// on dessine en noir
-    for ( var n=0 ; n<aretes.length ; n++ ) {
-        dessinerAreteNumero(n,"rgb(0,0,0)");
-    }
-}
 
 function calculerDessinerAxe(){ //calcule aussi les projections avant
     var x; var y; 
@@ -129,29 +64,23 @@ function calculerDessinerAxe(){ //calcule aussi les projections avant
     ctx.setLineDash([]); 
 }
 
-function effacer() {
-    ctx.clearRect(0,0,400,400);
-}
+
 
 function changerAxeRotation(k){
-    n=k;
+    n=k; // pour l'affichage de l'axe n en plus
+    matriceRot=matriceRotation(axes[n],0.02);
 }
-//- - - - - - - - - - - - - - - - - - 
-//- - - - controle de l'animation  
-//- - - - - - - - - - - - - - - - - -
+
 
 function mettreAJour() {
 		effacer();
-		matriceProj = produitMatriciel(matriceProj,matriceRotation(axes[n],0.02));
+		matriceProj = produitMatriciel(matriceProj,matriceRot);
 		calculerProjections();
 		dessinerAretes();
 		calculerDessinerAxe();
 		window.setTimeout(mettreAJour, 40);
 }
 
-//- - - - - - - - - - - - - - - - - - 
-//- - - - fin du javascript - - - - -
-//- - - - - - - - - - - - - - - - - -
 </script>
 </head>
 <body onload="commencer()">

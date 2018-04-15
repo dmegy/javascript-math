@@ -2,6 +2,7 @@ var sommetsTetraedre=new Array();
 var aretesTetraedre=new Array();
 var sommetsCube=new Array();
 var aretesCube=new Array();
+var axesCube=new Array();
 var sommetsOctaedre=new Array();
 var aretesOctaedre=new Array();
 var phi = (1+Math.sqrt(5))/2; // nombre d'or
@@ -14,8 +15,14 @@ var aretesDodecaedre=new Array();
 // - - - - - T E T R A E D R E - - - - -
 // - - - - - - - - - - - - - - - - - - -
 
+sommetsTetraedre.push([1,1,1]);
+sommetsTetraedre.push([-1,-1,1]);
+sommetsTetraedre.push([1,-1,-1]);
+sommetsTetraedre.push([-1,1,-1]);
 
-
+for(var i=0 ; i<sommetsTetraedre.length ; i++)
+    for(var j=i+1 ; j<sommetsTetraedre.length ; j++)
+        aretesTetraedre.push([i,j]);
 
 // - - - - - - - - - - - - - - - - - -
 // - - - - - - - C U B E - - - - - - - 
@@ -34,6 +41,22 @@ for(var i=0 ; i<sommetsCube.length ; i++)
             aretesCube.push([i,j]);
 //note : l'arete i est opposée à l'arete 11-i
 
+//six axes d'ordre 2
+axesCube[0]=[0,1,1];
+axesCube[1]=[1,0,1];
+axesCube[2]=[1,1,0];
+axesCube[3]=[0,-1,1];
+axesCube[4]=[-1,0,1];
+axesCube[5]=[-1,1,0];
+//quatre axes d'ordre 3
+axesCube[6]=[1,1,1];
+axesCube[7]=[-1,1,1];
+axesCube[8]=[1,-1,1];
+axesCube[9]=[-1,-1,1];
+// trois axes d'ordre 4
+axesCube[10]=[1,0,0];
+axesCube[11]=[0,1,0];
+axesCube[12]=[0,0,1];
 
 // - - - - - - - - - - - - - - - - - -
 // - - - - - O C T A E D R E - - - - -
