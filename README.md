@@ -2,4 +2,4 @@
 
 Pour tester :
 
-http://dmegy/github.io/javascript-math
+http://dmegy.github.io/javascript-math
